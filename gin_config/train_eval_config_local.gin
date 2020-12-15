@@ -1,0 +1,100 @@
+# Training.
+train_pipeline.data_sources = ['/cns/tp-d/home/danhangtang/shapenet/sstables/3d-r2n2/train_03001627.sst-000??-of-00020']
+train_pipeline.train_data_filter = ['all']
+train_pipeline.batch_size = 1
+train_pipeline.n_iterations = 10000000
+train_pipeline.n_iterations_per_batch = 1
+train_pipeline.learning_rate = 1e-4
+train_pipeline.save_summaries_frequency = 100
+train_pipeline.save_checkpoint_frequency = 100
+train_pipeline.time_every_n_steps = 100
+train_pipeline.data_sources_type = 'load_3d'
+
+# Evaluation by feeding forward.
+eval_pipeline.data_sources = {'eval_test_set': ['/cns/tp-d/home/danhangtang/shapenet/sstables/3d-r2n2/test_03001627.sst-000??-of-00020']}
+eval_pipeline.eval_data_filter = ['first', 2]
+eval_pipeline.batch_size = 1
+eval_pipeline.optim_mode = 'feed_forward'
+eval_pipeline.n_iterations_per_batch = 1000
+eval_pipeline.learning_rate = 1e-4
+eval_pipeline.data_sources_type = 'load_3d'
+eval_pipeline.save_mode_sdf_grid = ['every', 200]
+
+# Model.
+get_training_elements.model_component = 'MultiresDeepImplicitFunction'
+get_training_elements.model_params = {
+    'debug_mode': False,
+    'num_train_data': 1,
+    'num_test_data': 1,
+    'latent_optim_target': 'code_grid_enc',
+    'code_grid_enc_shape': [[1, 1, 1, 128], [2, 2, 2, 64], [4, 4, 4, 32], [8, 8, 8, 16], [16, 16, 16, 8]],
+    'codes_init_std': [0., 0., 0., 0., 0.],
+    'mode': 'fully_multi_level',
+    'encoder_mode': 'input_enc+f2c',
+    'code_for_point_mode': 'interpolate',
+    'pipeline_mode': 'general',
+    'sdf_scale': 100,
+    'max_point_per_chunk': 4096,
+    'num_point_dim': 3,
+    'num_level': 5,
+    'grid_shape': [[1, 1, 1], [1, 1, 1], [1, 1, 1], [1, 1, 1], [1, 1, 1]],
+    'grid_range_min': [-1, -1, -1],
+    'grid_range_max': [1, 1, 1],
+    'grid_mode': 'regular',
+    'input_config_unified': {
+          'clip': [True, [-5, 5]],
+      },
+    'label_config_unified':
+        {'clip': [True, [-5, 5]]},
+    'decoder_input_config':
+        [
+            {'data': 'lat_code+coord', 'empty_vars': []},
+            {'data': 'lat_code', 'empty_vars': []},
+            {'data': 'lat_code', 'empty_vars': []},
+            {'data': 'lat_code', 'empty_vars': []},
+            {'data': 'lat_code', 'empty_vars': []},
+         ],
+    'label_config':
+        [{'data': 'gt_residual', 'stop_grad': False},
+         {'data': 'gt_residual', 'stop_grad': False},
+         {'data': 'gt_residual', 'stop_grad': False},
+         {'data': 'gt_residual', 'stop_grad': False},
+         {'data': 'gt_residual', 'stop_grad': False}],
+    'summary_config':
+        {'sdf_range': 5, 'sdf_err_factor': 2, 'contours_err_max': 5,
+         'slice_idx_z': [0.5],
+         'slice_idx_y': [0.5],
+         'slice_idx_x': [0.5],
+         },
+    'eval_data_mode': 'slices',
+}
+
+# Loss.
+get_training_elements.loss_params = {
+    'sdf_l1':
+        {'term_weight': [1.0, 1.0, 1.0, 1.0, 1.0]},
+    'sdf_reg_l1':
+        {'term_weight': [0e0, 0e0, 0e0, 0e0, 0e0]},
+    'sdf_consistency_l1': {
+          'mode': ['every', 1],
+          'stop_grad_ref': True,
+          'point_weight_config/dist_to_visible': ['gaussian', 0.1],
+          'term_weight': [0e0, 0e0, 0e0, 0e0, 0e0]
+      },
+    'code_reg_l2':
+        {'term_weight': [0e0, 0e0, 0e0, 0e0, 0e0]},
+    'root_feat_reg_l2':
+        {'term_weight': [0e0]},
+    'point_weight_config':
+        [{'gt_gaussian': {'apply': False, 'sigma': 2.0}, 'pred_gaussian': {'apply': False, 'sigma': 2.0}},
+         {'gt_gaussian': {'apply': False, 'sigma': 2.0}, 'pred_gaussian': {'apply': False, 'sigma': 2.0}},
+         {'gt_gaussian': {'apply': False, 'sigma': 2.0}, 'pred_gaussian': {'apply': False, 'sigma': 2.0}},
+         {'gt_gaussian': {'apply': False, 'sigma': 2.0}, 'pred_gaussian': {'apply': False, 'sigma': 2.0}},
+         {'gt_gaussian': {'apply': False, 'sigma': 2.0}, 'pred_gaussian': {'apply': False, 'sigma': 2.0}},
+         ],
+    'summary_config':
+        {'slice_idx_z': [0.5],
+         'slice_idx_y': [0.5],
+         'slice_idx_x': [0.5],
+         },
+}

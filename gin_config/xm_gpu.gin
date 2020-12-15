@@ -1,0 +1,28 @@
+# XM config parameters.
+
+# pyformat: disable
+train/borg.mode = 'gpu'
+train/borg.gpu = 8
+train/borg.gpu_type = 'v100'
+train/borg.cpu = 32
+train/borg.coordinator_priority = 200
+train/borg.worker_priority = 200
+
+eval_test_set/borg.mode = 'gpu'
+eval_test_set/borg.cell = 'tp'
+eval_test_set/borg.gpu = 1
+eval_test_set/borg.gpu_type = 'v100'
+eval_test_set/borg.cpu = 4
+eval_test_set/borg.worker_priority = 200
+eval_test_set/borg.coordinator_priority = 200
+
+# pyformat: enable
+
+experiment.train_script_or_build_target = '//vr/perception/volume_compression/mdif:train_main_xm'
+experiment.eval_script_or_build_target = '//vr/perception/volume_compression/mdif:eval_main_xm'
+
+experiment.eval_names = ['eval_test_set']
+
+experiment.with_tensorboard = True
+experiment.with_mldash = True
+experiment.with_xprof = True

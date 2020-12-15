@@ -1,0 +1,6 @@
+inference_pipeline.optim_mode = 'feed_forward'
+inference_pipeline.exp_suffix = '0'
+
+get_training_elements.model_params_update = {
+    'masking_layer_update': {'mode': 'none', 'noise_config': None},
+}

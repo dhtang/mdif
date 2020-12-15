@@ -1,0 +1,33 @@
+# XM config parameters.
+
+# pyformat: disable
+forward/borg.mode = 'gpu'
+forward/borg.cell = 'tp'
+forward/borg.gpu = 1
+forward/borg.gpu_type = 'v100'
+forward/borg.cpu = 2
+forward/borg.worker_priority = 200
+forward/borg.coordinator_priority = 200
+
+lopt/borg.mode = 'gpu'
+lopt/borg.cell = 'tp'
+lopt/borg.gpu = 1
+lopt/borg.gpu_type = 'v100'
+lopt/borg.cpu = 2
+lopt/borg.worker_priority = 200
+lopt/borg.coordinator_priority = 200
+
+compl_dp/borg.mode = 'gpu'
+compl_dp/borg.cell = 'tp'
+compl_dp/borg.gpu = 1
+compl_dp/borg.gpu_type = 'v100'
+compl_dp/borg.cpu = 2
+compl_dp/borg.worker_priority = 200
+compl_dp/borg.coordinator_priority = 200
+
+# pyformat: enable
+
+experiment_standalone.script_or_build_target = '//vr/perception/volume_compression/mdif:inference_main_xm'
+
+experiment_standalone.with_tensorboard = True
+experiment_standalone.with_mldash = True

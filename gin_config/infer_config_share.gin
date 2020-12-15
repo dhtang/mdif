@@ -1,0 +1,19 @@
+inference_pipeline.data_sources_type = 'load_3d'
+inference_pipeline.override_save = False
+inference_pipeline.params_update = None
+
+inference_pipeline.data_filter = ['first', 2]
+inference_pipeline.learning_rate = 1e-4
+inference_pipeline.n_iterations_per_batch = 1000
+inference_pipeline.save_summaries_frequency_latent_optim = 100
+inference_pipeline.timing_frequency = 100
+inference_pipeline.save_mode_sdf_grid = ['every', 500]
+
+get_training_elements.model_params_update = {
+    'num_train_data': 1,
+    'num_test_data': 1,
+    'codes_init_from_encoder': False,
+    'codes_init_from_ref': False,
+}
+
+get_training_elements.loss_params_update = {}

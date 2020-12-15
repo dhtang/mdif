@@ -1,0 +1,50 @@
+inference_pipeline.optim_mode = 'latent_optim'
+inference_pipeline.learning_rate = 5e-3
+inference_pipeline.n_iterations_per_batch = 1000
+inference_pipeline.save_summaries_frequency_latent_optim = 100
+inference_pipeline.timing_frequency = 100
+inference_pipeline.save_mode_sdf_grid = ['every', 500]
+inference_pipeline.exp_suffix = 'nstep-1000--consistency--view-0'
+
+get_training_elements.model_params_update = {
+    'lr_schedule': {'type': 'ExponentialDecay',
+                    'initial_learning_rate': 1e-2,
+                    'decay_steps': 1000,
+                    'decay_rate': 0.5,
+                    'staircase': False},
+    'latent_optim_target': 'code_grid_enc',
+    'masking_layer_update': {'mode': 'none', 'noise_config': None},
+    'max_point_per_chunk': 1024,
+}
+
+MultiresDeepImplicitFunction.latent_optim_sampling_params = {
+    'normalize_coordinates': True,
+    'all_pixels': False,
+    'untruncated': False,
+    'untruncated/num_point': 0,
+    'untruncated/mode': 'uniform',
+    'untruncated/truncate': 5,
+    'regular': False,
+    'regular/num_point': 0,
+    'global': True,
+    'global/num_point': 1024,
+    'global/mode': 'uniform',
+    'near_surface': True,
+    'near_surface/num_point': 1024,
+    'near_surface/mode': 'uniform',
+    'depth_views': [0],
+    'consistency': True,
+    'consistency/invisible/point_source': 'global',
+    'consistency/invisible/num_point': 1024,
+    'consistency/visible/point_source': ['global', 'near_surface'],
+    'consistency/point_dist/min_k': 10,
+}
+
+get_training_elements.loss_params_update = {
+    'sdf_consistency_l1':
+        {'mode': ['every', 1],
+         'stop_grad_ref': True,
+         'point_weight_config/dist_to_visible': ['gaussian', 0.1],
+         'term_weight': [0e0, 1e1, 1e1, 1e1, 1e1],
+         },
+}
